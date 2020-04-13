@@ -34,10 +34,10 @@ export class JobSearch {
               this.stopLoading();
               return results
               .map(job => jobTemplate(job, this.currencySymbol))
-              .join('';)
+              .join('')
             })
             .then(jobs => this.resultsContainer.innerHTML = jobs)
-            .catch(()=> this.stopLoading =());
+            .catch(()=> this.stopLoading());
       });
     }
     startLoading() {
@@ -47,4 +47,3 @@ export class JobSearch {
       this.loadingElement.classList.add('loading')
     }
   }
-}
