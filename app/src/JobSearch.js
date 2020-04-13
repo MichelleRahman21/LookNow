@@ -8,7 +8,7 @@ export class JobSearch {
     this.loadingElement = document.querySelector(loadingElementSelector);
   }
   setCountryCode(){
-    this.countryCode = 'gb';
+    this.countryCode = 'us';
     this.setCurrencySymbol();
 
     fetch('http://ip-api.com/json')

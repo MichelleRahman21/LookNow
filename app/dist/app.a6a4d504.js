@@ -200,7 +200,7 @@ var JobSearch = /*#__PURE__*/function () {
     value: function setCountryCode() {
       var _this = this;
 
-      this.countryCode = 'gb';
+      this.countryCode = 'us';
       this.setCurrencySymbol();
       fetch('http://ip-api.com/json').then(function (results) {
         return results.json();
