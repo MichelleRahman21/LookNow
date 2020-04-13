@@ -44,6 +44,6 @@ export class JobSearch {
       this.loadingElement.classList.add('loading');
     }
     stopLoading() {
-      this.loadingElement.classList.add('loading')
+      this.loadingElement.classList.remove('loading')
     }
   }

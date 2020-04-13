@@ -117,163 +117,79 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/templates.js":[function(require,module,exports) {
-"use strict";
+})({"node_modules/parcel/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.jobTemplate = void 0;
-
-var jobTemplate = function jobTemplate(job, currency) {
-  return "\n<div class=\"card\">\n    <div class=\"card-body\">\n        <h4 class=\"card-title\">".concat(job.title, " up to ").concat(currency).concat(job.salary_max, "</h4>\n        <h5> ").concat(job.location.display_name, "</h5>\n        <p class=\"card-text\">").concat(job.description, "</p>\n        <a href=\"").concat(job.redirect_url, "\" target=\"_blank\"><View Job</a>\n    </div\n</div>\n");
-}; // This template is returning a template literal with the job listings  with some bootstrap classes
-// The map function will map through all of the jobs and then return this string literal
-
-
-exports.jobTemplate = jobTemplate;
-},{}],"src/utils.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.extractFormData = exports.getCurrencySymbol = void 0;
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-// help us ge tht eucrrency symbol
-var getCurrencySymbol = function getCurrencySymbol(countryCode) {
-  var currencies = {
-    gb: '£',
-    us: '$',
-    au: '$',
-    ca: '$'
-  };
-  return currencies[countryCode];
-};
-
-exports.getCurrencySymbol = getCurrencySymbol;
-
-var extractFormData = function extractFormData(form) {
-  return Array.from(form.elements).reduce(function (acc, _ref) {
-    var id = _ref.id,
-        value = _ref.value;
-    return _objectSpread({}, acc, _defineProperty({}, id, value));
-  }, {});
-};
-
-exports.extractFormData = extractFormData;
-},{}],"src/JobSearch.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.JobSearch = void 0;
-
-var _templates = require("./templates");
-
-var _utils = require("./utils");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var JobSearch = /*#__PURE__*/function () {
-  function JobSearch(searchFormSelector, resultsContainerSelector, loadingElementSelector) {
-    _classCallCheck(this, JobSearch);
-
-    this.searchForm = document.querySelector(searchFormSelector);
-    this.resultsContainer = document.querySelector(resultsContainerSelector);
-    this.loadingElement = document.querySelector(loadingElementSelector);
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
   }
 
-  _createClass(JobSearch, [{
-    key: "setCountryCode",
-    value: function setCountryCode() {
-      var _this = this;
+  return bundleURL;
+}
 
-      this.countryCode = 'us';
-      this.setCurrencySymbol();
-      fetch('http://ip-api.com/json').then(function (results) {
-        return results.json();
-      }).then(function (results) {
-        _this.setCountryCode = results.countryCode.toLowerCase();
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
 
-        _this.setCurrencySymbol();
-      });
+    if (matches) {
+      return getBaseURL(matches[0]);
     }
-  }, {
-    key: "setCurrencySymbol",
-    value: function setCurrencySymbol() {
-      this.currencySymbol = (0, _utils.getCurrencySymbol)(this.CountryCode);
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"node_modules/parcel/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
     }
-  }, {
-    key: "configureFormListener",
-    value: function configureFormListener() {
-      var _this2 = this;
 
-      this.searchForm.addEventListener('submit', function (event) {
-        event.preventDefault();
+    cssTimeout = null;
+  }, 50);
+}
 
-        _this2.startLoading();
+module.exports = reloadCSS;
+},{"./bundle-url":"node_modules/parcel/src/builtins/bundle-url.js"}],"src/scss/app.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
 
-        _this2.resultsContainer.innerHTML = '';
-
-        var _extractFormData = (0, _utils.extractFormData)(_this2.searchForm),
-            search = _extractFormData.search,
-            location = _extractFormData.location;
-
-        fetch('http://localhost:3000/?search=${search}&location=${location}&country={this.countryCode}').then(function (response) {
-          return response.json();
-        }).then(function (_ref) {
-          var results = _ref.results;
-
-          _this2.stopLoading();
-
-          return results.map(function (job) {
-            return (0, _templates.jobTemplate)(job, _this2.currencySymbol);
-          }).join('');
-        }).then(function (jobs) {
-          return _this2.resultsContainer.innerHTML = jobs;
-        }).catch(function () {
-          return _this2.stopLoading();
-        });
-      });
-    }
-  }, {
-    key: "startLoading",
-    value: function startLoading() {
-      this.loadingElement.classList.add('loading');
-    }
-  }, {
-    key: "stopLoading",
-    value: function stopLoading() {
-      this.loadingElement.classList.remove('loading');
-    }
-  }]);
-
-  return JobSearch;
-}();
-
-exports.JobSearch = JobSearch;
-},{"./templates":"src/templates.js","./utils":"src/utils.js"}],"src/app.js":[function(require,module,exports) {
-"use strict";
-
-var _JobSearch = require("./JobSearch");
-
-// Main
-var jobSearch = new _JobSearch.JobSearch('#search-form', './result-container', '.loading-element');
-jobSearch.setCountryCode();
-jobSearch.configureFormListener(); // so the backend knows what is taking from the API
-},{"./JobSearch":"src/JobSearch.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"./../img/img1.jpg":[["img1.7af94737.jpg","src/img/img1.jpg"],"src/img/img1.jpg"],"_css_loader":"node_modules/parcel/src/builtins/css-loader.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -477,5 +393,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["node_modules/parcel/src/builtins/hmr-runtime.js","src/app.js"], null)
-//# sourceMappingURL=/app.a6a4d504.js.map
+},{}]},{},["node_modules/parcel/src/builtins/hmr-runtime.js"], null)
+//# sourceMappingURL=/app.a651375d.js.map
